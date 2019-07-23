@@ -49,10 +49,10 @@ Tags:
 * Labelling is as follows
 | Label|Introduction|
 | :---: | :---: |
-|-1 |The vehicle is not within the specific lane and will not cut in there in 1 second
-| 0 |The vehicle is within the specific lane but it will not keep this lane in 1 second
-| 1 |The vehicle is within the specific lane and it will keep this lane in 1 second
-| 2 |The vehicle is not within the specific lane but will cut in there in 1 second
+| -1 | The vehicle is not within the specific lane and will not cut in there in 1 second |
+| 0 | The vehicle is within the specific lane but it will not keep this lane in 1 second |
+| 1 | The vehicle is within the specific lane and it will keep this lane in 1 second |
+| 2 | The vehicle is not within the specific lane but will cut in there in 1 second |
 + Sensors Integration: It includes Lidar (Velodyne HDL-64E S3), two cameras (one uses a 25mm focal length lens and the other uses a 6mm focal length lens), high definition map and localization system
 * More details - http://data.apollo.auto/help?name=data_intro_pnc&data_key=prediction_label&data_type=0&locale=en-us&lang=en
 
