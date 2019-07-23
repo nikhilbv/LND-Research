@@ -109,9 +109,10 @@ Tags:
   
 * road edges
 
-## Road profile architectures - 
+## Road profile architectures -
+
 |Sno| Application Area| Year| DNNArch|  Paper|  Reference|  Github| Remarks|  Annotation Type|  Annotation Tool|
-| -:- |-:- |-:- |-:- |-:- | -:- |-:- |-:- |-:- |-:- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 |1|Lane detection|15th-Feb-2018|NA|Towards End-to-End Lane Detection: an Instance Segmentation Approach|https://arxiv.org/abs/1802.05591|https://github.com/MaybeShewill-CV/lanenet-lane-detection|Keras/Tensorflow|polylines for lane markings|NA|
 |2|Lane detection||GCN|End to End Video Segmentation for Driving : Lane Detection For Autonomous Car|NA|https://github.com/wenhuizhang/autoCar|Raspberry Pi|NA|NA|
 |3|Lane and Road Marking Detection and Recognition|17th-Oct-2017|VPGNet|VPGNet: Vanishing Point Guided Network for Lane and Road Marking Detection and Recognition|https://arxiv.org/abs/1710.06288|https://github.com/SeokjuLee/VPGNet|Caffe|NA|NA|
@@ -122,9 +123,10 @@ Tags:
 |8|||ReNet|||||||
 |9|||MRFNet|||||||
 
-## Road profile datasets - 
+## Road profile datasets -
+
 |Slno|Name|Dataset reference|Paper|Dataset size|Total images|Annotation type|Example|
-|-:-|-:-|-:-|-:-|-:-|-:-|-:-|-:-|
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 |1|TuSimple|https://github.com/TuSimple/tusimple-benchmark/blob/master/doc/lane_detection/readme.md||10000 one-second-long video clips of 20 frames each|200000|Polylines||
 |2|CULane|https://xingangpan.github.io/projects/CULane.html||88880 for training set 9675 for validation set 34680 for test set|133235|||
 |3|Caltech lanes|http://www.mohamedaly.info/datasets/caltech-lanes||cordova1 with 250 frames cordova2 with 406 frames washington1 with 337 frames washington2 with 232 frames|1225|||
@@ -139,17 +141,19 @@ Tags:
 |12|KITTI Road |||||||
 |13|VPGNet ||||||||
 
-![roadprofiledatasets](internal/roadprofiledatasets.png)
+![roadprofiledatasets](images/roadprofiledatasets.png)
 
 
 #### Road profile DNN hunt and experimentation to extract road profiles (line geometry like lanes, road edges etc.) which has the geometric sense (x,y,z,y,p,r w.r.t. camera position as 0,0,0)
 **- as measured by:**
-    - Total number of DNNArch referred - not less than 5
-    - Total number of DNNArch deployed locally and experimented with ob gaze dataset - not less than 2
-    - Clarity and depth of documentation on the learning of the research - excel sheet, docs, workflow diagrams in internal git-rep
-        a) Documentation, experiment results on the understanding and providing insights on differences in the architectural differences this class of DNNArch w.r.t. object detection/segmentation DNNArch (in particular mask_rcnn). For example, reasoning on:
-            i) Why lanet is better than mask_rcnn for lane segmentation?
-            ii) Can lanet be used in place of mask_rcnn for object segmentation for object segmentation?
+- Total number of DNNArch referred - not less than 5
+- Total number of DNNArch deployed locally and experimented with ob gaze dataset - not less than 2
+- Clarity and depth of documentation on the learning of the research - excel sheet, docs, workflow diagrams in internal git-rep
+	+ Documentation, experiment results on the understanding and providing insights on differences in the architectural differences this class of DNNArch w.r.t. object detection/segmentation DNNArch (in particular mask_rcnn). For example, reasoning on:
+    
+	i) Why lanet is better than mask_rcnn for lane segmentation?
+	
+    ii) Can lanet be used in place of mask_rcnn for object segmentation for object segmentation?
 
 ### * SCNN Notes
 * CNNs are great for extracting semantics from raw pixels but perform poorly on capturing the spatial relationships (e.g. rotational and translational relationships) of pixels in a frame. These spatial relationships, however, are important for the task of lane detection, where there are strong shape priors but weak appearance coherences.
@@ -161,7 +165,7 @@ Tags:
 ### * Diff b/w cnn, scnn and lanenet
 
 |CNN|SCNN|Lanenet|
-|-:-|-:-|-:-|
+| :---: | :---: | :---: |
 |CNNs are great for extracting semantics from raw pixels but perform poorly on capturing the spatial relationships (e.g. rotational and translational relationships) of pixels in a frame. These spatial relationships, however, are important for the task of lane detection, where there are strong shape priors but weak appearance coherences.|Spatial CNN (SCNN) proposes an architecture which “generalizes traditional deep layer-by-layer convolutions to slice-by slice convolutions within feature maps”.| Lanenet outputs pixel per frame. To fit a curve through these pixels to get the lane parametrization. The lane pixels are first projected into a ”bird’s-eye view” representation, using a fixed transformation matrix|
 |For example, it is hard to determine traffic poles solely by extracting semantic features as they lack distinct and coherent appearance cues and are often occluded.| SCNN takes this a step further by treating individual feature map rows and columns as the “layers”, applying the same process sequentially (where sequentially means that a slice passes information to the succeeding slice only after it has received information from the preceding slices), allowing message passing of pixel information between neurons within the same layer, effectively increasing emphasis on spatial information.|Due to the fact that the transformation parameters are fixed for all images, this raises issues when non flat ground-planes are encountered, e.g. in slopes. To alleviate this problem, we train a network, referred to as H-Net, that estimates the parameters of an ”ideal” perspective transformation, conditioned on the input image.|
 ||Gets curve line from probability map from matlab|Most popular detect-and-segment approaches (e.g. [14] Mask R-CNN, [38] J. Dai, K. He, and J. Sun. Instance-aware semantic segmentation via multi-task network cascades. In CVPR, 2016) are not ideal for lane instance segmentation, since bounding box detection is more suited for compact objects, which lanes are not.|
@@ -204,7 +208,7 @@ The zeros are placed to enforce the constraint that horizontal lines remain hori
 * Types of scene in CUlane dataset
 
 |Type of scene|Percentage of data in dataset|
-|-:-|-:-|
+| :---: | :---: |
 |Normal|27.7%|
 |Crowded|23.4%|
 |Night|20.3%|
@@ -231,8 +235,9 @@ https://github.com/XingangPan/SCNN/issues/16
 * There are total 1225 individual frames which are taken from the camera mounted on the Alice.
 * Dataset contains the labeled lanes.
 * The dataset is divided into 4 clips as shown below
+
 |Name of the Clip|Frames in the Clip|
-|-:-|-:-|
+| :---: | :---: |
 |cordova1|250|
 |cordova2|406|
 |washington1|337|
@@ -266,8 +271,9 @@ https://github.com/XingangPan/SCNN/issues/16
 * Additionally, the dataset also covers the conditions like car lamps, lens flare, white lamp, street lamp, yellow lamp.
 * The dataset also includes different scenarios like pedestrians, traffic jam and obstacles.
 * Categories of DIML dataset
+
 |Category|Scenario covered|Conditions covered|
-|-:-|-:-|-:-|
+| :---: | :---: | :---: |
 |DIML-LD-1|highway scenario|1. Capture time- Sunset, sunrise, day, night<br>2. Weather conditions-cloudy, rainy, clear.<br>3. Other conditions-car lamps, street lamps, lens flare.|
 |DIML-LD-2|Route scenario|1. capture time- Sunset, sunrise, day, night<br>2. Weather conditions cloudy, rainy, clear.<br>3. Other conditions-car lamps, street lamps, lens flare.|
 |DIML-LD-3|Urban road|1. capture time- Sunset, sunrise, day, night<br>2. Weather conditions cloudy, rainy, clear.<br>3. Other conditions-car lamps, street lamps, lens flare.|
@@ -328,7 +334,7 @@ includes 2782 video clips
 * https://github.com/ApolloScapeAuto/dataset-api/blob/master/lane_segmentation/LanemarkDiscription.pdf
 
 ||CULane|Caltech|NEXET|DIML|KITTI|TuSimple|UAH|BDD100K|Cityscape|Apolloscape|Mapillary Vistas|
-|-:-|-:-|-:-|-:-|-:-|-:-|-:-|-:-|-:-|-:-|-:-|-:-|
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 |Sequences|More than 55 hrs of videos|4 clips|NA|470|22|700|500 min video|100000|7 months|4|NA|
 |Images|133235|1225|50000|-|14999|140000|NA|120000000|5k fine annotated and 20k weakly annotated images|147k|25k|
 |Classes|||||34|||19|34|36|66|
