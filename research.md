@@ -66,7 +66,7 @@ Tags:
 -- two front cameras (VMX-CS6, 3384 x 2710). (Images are captured every one meter)
 
 |Group| Class|  Label ID| Color (RGB)|  Description|
-| -:- |-:- |-:- |-:- |-:- |
+| :---: | :---: | :---: | :---: | :---: |
 |Sky| Sky|  17| (70,130,180)| -
 |Movable object|  Car|  33| (0, 0,142)| -
 |-  |Motorcycle|  34  |(0, 0,230)|  Parked without rider
