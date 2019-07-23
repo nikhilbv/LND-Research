@@ -364,3 +364,9 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 * http://www.cvlibs.net/datasets/kitti/eval_road.php
 * Leaderboard - https://paperswithcode.com/task/lane-detection
 * https://github.com/open-mmlab/mmdetection
+
+| name  | age | gender    | money  |
+|-------|:---:|-----------|-------:|
+| rhio  | 384 | robot     | $3,000 |
+| haroo | .3  | bird      | $430   |
+| jedi  | ?   | undefined | $0     |
