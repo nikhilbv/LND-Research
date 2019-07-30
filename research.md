@@ -7,6 +7,15 @@ Last_updated:
 Tags:
 ---
 
+Table of contents
+=================
+
+<!--ts-->
+   - [Problems Apollo Baidu has solved using AI](#problems-apollo-baidu-has-solved-using-ai)
+   		+ [Lidar Point Cloud Obstacle Detection & Classification](#lidar-point-cloud-obstacle-detection-&-classification)
+<!--te-->
+
+
 ## Problems Apollo Baidu has solved using AI
 #### 1. Lidar Point Cloud Obstacle Detection & Classification
 * Input - Lidar data
