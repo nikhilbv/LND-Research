@@ -352,10 +352,11 @@ includes 2782 video clips
 |Streets labeled|NO|YES|YES|YES|NO|YES|YES|YES|YES|YES|YES|
 
 ## Add-ons
-* semantic segmentation of lane marks
+* Tusimple class info visualizer -
+https://github.com/nikhilbv/TuSimple-lane-classes
+* Semantic segmentation of lane marks
 https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-and-classi%EF%AC%81cation-by-utilizing-cnn-as-a-regression-network-2.pdf
 * MIoU (mean intersection over union) metric
-* Classified left_side, left_ego, right_ego and right_side lane types are represented by green, orange, red and blue colors
 * Apolloscape Evaluation - conventional Intersection-over-Union scores, also known as the **Jaccard Index**
 
 ## References
