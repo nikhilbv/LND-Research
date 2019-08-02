@@ -1,20 +1,6 @@
----
-Title: LND-Research
-Summary: LND-Research
-Author: Nikhil B V
-Date:
-Last_updated:
-Tags:
----
-
 Table of contents
 =================
-
-<!--ts-->
-   - [Problems Apollo Baidu has solved using AI](#problems-apollo-baidu-has-solved-using-ai)
-   		+ [Lidar Point Cloud Obstacle Detection & Classification](#lidar-point-cloud-obstacle-detection-&-classification)
-<!--te-->
-
+[TOC]
 
 ## Problems Apollo Baidu has solved using AI
 #### 1. Lidar Point Cloud Obstacle Detection & Classification
@@ -104,7 +90,7 @@ Table of contents
 |Others|  Others| 0|  (0,0, 0)| Not included in evaluation
 
 ## Road Profile DNN Hunt
-### Road profiles - 
+### Road profiles
 * road polygons
 * sidewalks
 * lane marking
@@ -115,10 +101,10 @@ Table of contents
     * Broken Yellow Line
 * lanes
   * Ego lanes and other road lanes
-  
+
 * road edges
 
-## Road profile architectures -
+### Road profile architectures
 
 |Sno| Application Area| Year| DNNArch|  Paper|  Reference|  Github| Remarks|  Annotation Type|  Annotation Tool|
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -132,7 +118,7 @@ Table of contents
 |8|||ReNet|||||||
 |9|||MRFNet|||||||
 
-## Road profile datasets -
+### Road profile datasets
 
 |Slno|Name|Dataset reference|Paper|Dataset size|Total images|Annotation type|Example|
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -153,8 +139,8 @@ Table of contents
 ![roadprofiledatasets](images/roadprofiledatasets.png)
 
 
-#### Road profile DNN hunt and experimentation to extract road profiles (line geometry like lanes, road edges etc.) which has the geometric sense (x,y,z,y,p,r w.r.t. camera position as 0,0,0)
-**- as measured by:**
+**Road profile DNN hunt and experimentation to extract road profiles (line geometry like lanes, road edges etc.) which has the geometric sense (x,y,z,y,p,r w.r.t. camera position as 0,0,0)
+- as measured by:**
 - Total number of DNNArch referred - not less than 5
 - Total number of DNNArch deployed locally and experimented with ob gaze dataset - not less than 2
 - Clarity and depth of documentation on the learning of the research - excel sheet, docs, workflow diagrams in internal git-rep
@@ -164,14 +150,14 @@ Table of contents
 	
     ii) Can lanet be used in place of mask_rcnn for object segmentation for object segmentation?
 
-### * SCNN Notes
+### SCNN Notes
 * CNNs are great for extracting semantics from raw pixels but perform poorly on capturing the spatial relationships (e.g. rotational and translational relationships) of pixels in a frame. These spatial relationships, however, are important for the task of lane detection, where there are strong shape priors but weak appearance coherences.
 * For example, it is hard to determine traffic poles solely by extracting semantic features as they lack distinct and coherent appearance cues and are often occluded.
 *  Spatial CNN (SCNN) proposes an architecture which “generalizes traditional deep layer-by-layer convolutions to slice-by slice convolutions within feature maps”.
 *  In a traditional layer-by-layer CNN, each convolution layer receives input from its preceding layer, applies convolutions and nonlinear activation, and sends the output to the succeeding layer.
 *  SCNN takes this a step further by treating individual feature map rows and columns as the “layers”, applying the same process sequentially (where sequentially means that a slice passes information to the succeeding slice only after it has received information from the preceding slices), allowing message passing of pixel information between neurons within the same layer, effectively increasing emphasis on spatial information.
 
-### * Diff b/w cnn, scnn and lanenet
+### Difference b/w CNN, SCNN and Lanenet
 
 |CNN|SCNN|Lanenet|
 | :---: | :---: | :---: |
@@ -179,7 +165,7 @@ Table of contents
 |For example, it is hard to determine traffic poles solely by extracting semantic features as they lack distinct and coherent appearance cues and are often occluded.| SCNN takes this a step further by treating individual feature map rows and columns as the “layers”, applying the same process sequentially (where sequentially means that a slice passes information to the succeeding slice only after it has received information from the preceding slices), allowing message passing of pixel information between neurons within the same layer, effectively increasing emphasis on spatial information.|Due to the fact that the transformation parameters are fixed for all images, this raises issues when non flat ground-planes are encountered, e.g. in slopes. To alleviate this problem, we train a network, referred to as H-Net, that estimates the parameters of an ”ideal” perspective transformation, conditioned on the input image.|
 ||Gets curve line from probability map from matlab|Most popular detect-and-segment approaches (e.g. [14] Mask R-CNN, [38] J. Dai, K. He, and J. Sun. Instance-aware semantic segmentation via multi-task network cascades. In CVPR, 2016) are not ideal for lane instance segmentation, since bounding box detection is more suited for compact objects, which lanes are not.|
 
-#### * H-Net Notes
+### H-Net Notes
 * The output of LaneNet is a collection of pixels per lane
 * Fitting a polynomial through these pixels in the original image space is not ideal, as one has to resort to higher order polynomials to be able to cope with curved lanes.
 *  A frequently used solution to this problem is to project the image into a ”bird’s-eye view” representation, in which lanes are parallel to each other and as such, curved lanes can be fitted with a 2nd to 3rd order polynomial.
@@ -193,8 +179,8 @@ Table of contents
     ```
 The zeros are placed to enforce the constraint that horizontal lines remain horizontal under the transformation.
 
-## Public Datasets for Lane Detection -
-##### Purpose is to answer the following questions
+## Public Datasets for Lane Detection
+**Purpose is to answer the following questions**
 * What?
   * What are the different labels for annotations?
   * What geomtries are used for annotations?
@@ -363,7 +349,6 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 * Apolloscape Evaluation - conventional Intersection-over-Union scores, also known as the **Jaccard Index**
 
 ## References
-
 * http://apollo.auto/developer.html
 * http://data.apollo.auto/?locale=en-us&lang=en
 * Videos - 
@@ -382,3 +367,11 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 * https://github.com/open-mmlab/mmdetection
 
 
+**TODO**
+
+[x] Apollo auto AI research
+[x] Road profiles
+[x] Architectures
+[x] Dataset
+[x] Implementation
+[ ] Testing on other dataset 
