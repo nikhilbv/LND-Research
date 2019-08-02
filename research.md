@@ -1,10 +1,10 @@
 ---
-title: LND Research
-decription: Road profile detection
-author: Nikhil B V
-date: 11 jun 2019
-updated: 2 Aug 2019
-tags: raod, lanes
+Title: LND Research
+Decription: Road profile detection
+Author: Nikhil B V
+Date: 11th Jun 2019
+Updated: 02th Aug 2019
+Tags: raod, lanes
 ---
 
 Table of contents
@@ -379,9 +379,9 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 
 **TODO**
 
-[x] Apollo auto AI research
-[x] Road profiles
-[x] Architectures
-[x] Dataset
-[x] Implementation
-[ ] Testing on other dataset 
+- [x] Apollo auto AI research
+- [x] Road profiles
+- [x] Architectures
+- [x] Dataset
+- [x] Implementation
+- [ ] Testing on other dataset 
