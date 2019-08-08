@@ -266,7 +266,6 @@ https://github.com/XingangPan/SCNN/issues/16
 * The researchers have labeled the rear part of nearby cars which could become caught up in a crash.
 * https://github.com/ternaus/nexar/tree/master/src
 
-
 **lV. DIML**
 * The images are captured using the OV10630 image sensor.
 * There are 470 video sequences in dataset and the image size is 1280 × 800.
@@ -310,7 +309,6 @@ includes 2782 video clips
 * https://github.com/TuSimple/tusimple-benchmark/blob/master/example/lane_demo.ipynb
 * https://github.com/TuSimple/tusimple-benchmark/blob/master/doc/lane_detection/readme.md
 
-
 **Vll. The UAH Driveset**
 * The UAH driverset dataset is captured by using the DriveSafe a driving monitoring app. * * Data is recoded in different environment. The application was run on 3 different behaviors (aggressive, normal and drowsy) and six various drivers and vehicles on 2 types of streets (secondary road and motor way).
 * The dataset contains 500 minutes driving raw data plus some semantic information.
@@ -350,6 +348,47 @@ includes 2782 video clips
 |Multiple cameras|YES|NO|YES|YES|YES|NO|NO|YES|YES|YES|YES|
 |Multiple street type|NO|NO|YES|YES|YES|NO|YES|YES|YES|YES|YES|
 |Streets labeled|NO|YES|YES|YES|NO|YES|YES|YES|YES|YES|YES|
+
+## VGG16 model details
+* Paper - https://arxiv.org/abs/1409.1556
+![vgg-layers](images/vggnet -layers-bd.png)
+![vgg-layers-details](images/vggnet -layers.png)
+* Training parameters -
+	- Batch size = 256
+    - Momemtum = 0.9
+    - Learning rate = 10^-2
+    - 370K iterations (74 epochs)
+    - 4 NVIDIA Titan Black GPUs
+* Dataset -
+	- The dataset includes images of 1000 classes, and is split into three sets:
+    - Training (1.3M images)
+    - Validation (50K images)
+    - Testing (100K images with held-out class labels)
+
+## Loss functions of Lanenet
+* LaneNet is trained end-to-end for lane detection, by treating lane detection as an instance segmentation problem.
+* The **instance segmentation task** consists of two parts, a **segmentation and a clustering part**
+* To increase performance, both in terms of speed and accuracy, these two parts are jointly trained in a multi-task network
+* **Binary segmentation** - 
+    * The segmentation branch of LaneNet is trained to output a binary segmentation map, indicating which pixels belong to a lane and which not
+    * The segmentation network is trained with the **standard cross-entropy loss function**. Since the two classes (lane/background) are highly unbalanced, we apply **bounded inverse class weighting**
+* **Instance segmentation** -
+    * To disentangle the lane pixels identified by the segmentation branch, we train the second branch of LaneNet for lane instance embedding
+	* We use a one-shot method based on **distance metric learning** which can easily be integrated with standard feed-forward networks and which is specifically designed for real-time applications
+	* By using their **clustering loss function**, the instance embedding branch is trained to output an embedding for each lane pixel so that the distance between pixel embeddings belonging to the same lane is small, whereas the distance between pixel embeddings belonging to different lanes is maximized.
+* **H-Net** -
+	*In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, **custom loss function** is used
+
+## MaskRCNN vs Lanenet
+* MaskRCNN
+![mrcnn](images/mrcnn.png)
+* Lanenet
+![lanenet](images/lanenet.png)
+---
+* Without curve fitting
+![2-branches](images/2-branches.png)
+
+
 
 ## Add-ons
 * Tusimple class info visualizer -
