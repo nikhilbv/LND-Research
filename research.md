@@ -3,7 +3,7 @@ Title: LND Research
 Decription: Road profile detection
 Author: Nikhil B V
 Date: 11th Jun 2019
-Updated: 02th Aug 2019
+Updated: 07th Aug 2019
 Tags: raod, lanes
 ---
 
@@ -381,8 +381,10 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 **TODO**
 
 - [x] Apollo auto AI research
-- [x] Road profiles
-- [x] Architectures
-- [x] Dataset
-- [x] Implementation
-- [ ] Testing on other dataset 
+- [x] Road profiles (AOD attributes)
+- [x] DNN Architectures for LND
+- [x] Dataset for LND
+- [x] Implementation of LND DNN
+- [x] Visualization of Tusimple dataset
+- [ ] Testing on other LND dataset
+- [ ] Evaluation metrics for LND
