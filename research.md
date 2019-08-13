@@ -366,29 +366,43 @@ includes 2782 video clips
     - Testing (100K images with held-out class labels)
 
 ## Loss functions of Lanenet
-* LaneNet is trained end-to-end for lane detection, by treating lane detection as an instance segmentation problem.
+* LaneNet is trained end-to-end for lane detection, by treating lane detection as an **instance segmentation problem.**
 * The **instance segmentation task** consists of two parts, a **segmentation and a clustering part**
 * To increase performance, both in terms of speed and accuracy, these two parts are jointly trained in a multi-task network
 * **Binary segmentation** - 
     * The segmentation branch of LaneNet is trained to output a binary segmentation map, indicating which pixels belong to a lane and which not
-    * The segmentation network is trained with the **standard cross-entropy loss function**. Since the two classes (lane/background) are highly unbalanced, we apply **bounded inverse class weighting**
+    * The segmentation network is trained with the **standard cross-entropy loss function** (Common for classification problem). Since the two classes (lane/background) are highly unbalanced, we apply **bounded inverse class weighting**
 * **Instance segmentation** -
     * To disentangle the lane pixels identified by the segmentation branch, we train the second branch of LaneNet for lane instance embedding
 	* We use a one-shot method based on **distance metric learning** which can easily be integrated with standard feed-forward networks and which is specifically designed for real-time applications
 	* By using their **clustering loss function**, the instance embedding branch is trained to output an embedding for each lane pixel so that the distance between pixel embeddings belonging to the same lane is small, whereas the distance between pixel embeddings belonging to different lanes is maximized.
 * **H-Net** -
-	*In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, **custom loss function** is used
+	* In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, **custom loss function** is used
 
 ## MaskRCNN vs Lanenet
-* MaskRCNN
+* **MaskRCNN - **
 ![mrcnn](images/mrcnn.png)
-* Lanenet
-![lanenet](images/lanenet.png)
+<pre>									Fig 1</pre>
+Fig 1 - The model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.
 ---
-* Without curve fitting
+* **Lanenet - **
+	* with curve fitting
+![lanenet](images/lanenet.png)
+<pre>									Fig 2a</pre>
+	* Without curve fitting
 ![2-branches](images/2-branches.png)
+<pre>									Fig 2b</pre>
 
+Fig 2a - Given an input image, LaneNet outputs a lane instance map, by labeling each lane pixel with a lane id. Next, the lane pixels are transformed using the transformation matrix, outputted by H-Net which learns a perspective transformation conditioned on the input image. For each lane a 3rd order polynomial is fitted and the lanes are reprojected onto the image.
 
+## Evaluation matrix of lanenet
+* The accuracy is calculated as the average correct number of points per image:</br>
+<pre>		![](images/acc.svg)</pre>
+with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number of ground-truth points.
+* A point is correct when the difference between a ground-truth and predicted point is less than a certain threshold.</br>
+* Together with the accuracy, they also provide the false positive and false negative scores:</br>
+<pre>![](images/fp.svg)	![](images/fn.svg)</pre>
+with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> the number of predicted lanes, M<sub>pred</sub> the number of missed ground-truth lanes and N<sub>gt</sub> the number of all ground-truth lanes.
 
 ## Add-ons
 * Tusimple class info visualizer -
@@ -415,7 +429,11 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 * http://www.cvlibs.net/datasets/kitti/eval_road.php
 * Leaderboard - https://paperswithcode.com/task/lane-detection
 * https://github.com/open-mmlab/mmdetection
-
+* MaskRCNN - 
+	* https://medium.com/@alittlepain833/simple-understanding-of-mask-rcnn-134b5b330e95
+	* https://www.analyticsvidhya.com/blog/2019/07/computer-vision-implementing-mask-r-cnn-image-segmentation/?utm_source=blog&utm_medium=introduction-image-segmentation-techniques-python
+* MSE and cross-entropy - 
+	* https://towardsdatascience.com/common-loss-functions-in-machine-learning-46af0ffc4d23 
 
 **TODO**
 
