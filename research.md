@@ -366,24 +366,68 @@ includes 2782 video clips
     - Testing (100K images with held-out class labels)
 
 ## Loss functions of Lanenet
+##### Lanenet -
 * LaneNet is trained end-to-end for lane detection, by treating lane detection as an **instance segmentation problem.**
 * The **instance segmentation task** consists of two parts, a **segmentation and a clustering part**
 * To increase performance, both in terms of speed and accuracy, these two parts are jointly trained in a multi-task network
 * **Binary segmentation** - 
     * The segmentation branch of LaneNet is trained to output a binary segmentation map, indicating which pixels belong to a lane and which not
     * The segmentation network is trained with the **standard cross-entropy loss function** (Common for classification problem). Since the two classes (lane/background) are highly unbalanced, we apply **bounded inverse class weighting**
+</br>
+![](images/crossentropyloss.svg)
+</br>
 * **Instance segmentation** -
     * To disentangle the lane pixels identified by the segmentation branch, we train the second branch of LaneNet for lane instance embedding
-	* We use a one-shot method based on **distance metric learning** which can easily be integrated with standard feed-forward networks and which is specifically designed for real-time applications
-	* By using their **clustering loss function**, the instance embedding branch is trained to output an embedding for each lane pixel so that the distance between pixel embeddings belonging to the same lane is small, whereas the distance between pixel embeddings belonging to different lanes is maximized.
-* **H-Net** -
-	* In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, **custom loss function** is used
+    * We use a one-shot method based on **distance metric learning** which can easily be integrated with standard feed-forward networks and which is specifically designed for real-time applications
+    * By using their **clustering loss function**, the instance embedding branch is trained to output an embedding for each lane pixel so that the distance between pixel embeddings belonging to the same lane is small, whereas the distance between pixel embeddings belonging to different lanes is maximized.
+* **H-Net -**
+    * In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, custom loss function **Mean Square Error (MSE)** is used</br>
+![](images/custom-loss-hnet.svg)
+</br>
+
+##### MaskRCNN -
+* The multi-task loss function of Mask R-CNN combines the loss of classification, localization and segmentation mask:</br>L = L<sub>cls</sub>+L<sub>box</sub>+L<sub>mask</sub>, where L<sub>cls</sub> and L<sub>box</sub> are same as in Faster R-CNN.
+    * Faster R-CNN is optimized for a multi-task loss function, similar to fast R-CNN.
+
+    | Symbol | Explanation |
+    |:--------|:--------|
+	|p<sub>i</sub>|Predicted probability of anchor i being an object.|
+    |p<sub>i</sub><sup>*</sup>|	Ground truth label (binary) of whether anchor i is an object.|
+    |t<sub>i</sub>	|Predicted four parameterized coordinates.|
+    |t<sub>i</sub><sup>*</sup>|	Ground truth coordinates.|
+    |N<sub>cls</sub>|	Normalization term, set to be mini-batch size (~256) in the paper.|
+    |N<sub>box</sub>|	Normalization term, set to the number of anchor locations (~2400) in the paper.|
+    |λ|	A balancing parameter, set to be ~10 in the paper (so that both Lcls and Lbox terms are roughly equally weighted).|
+    * The multi-task loss function combines the losses of classification and bounding box regression:</br>L = L<sub>cls</sub> + L<sub>box</sub></br>
+![](images/frcnn-loss.svg)
+</br>
+    where L<sub>cls</sub> is the log loss function over two classes, as we can easily translate a multi-class classification into a binary classification by predicting a sample being a target object versus not.  L<sub>1</sub><sup>smooth</sup> is the smooth L1 loss
+</br>
+![](images/frcnn-loss2.svg)
+</br>
+
+
+
+* The mask branch generates a mask of dimension m x m for each RoI and each class; K classes in total. Thus, the total output is of size K⋅m<sup>2</sup>. Because the model is trying to learn a mask for each class, there is no competition among classes for generating masks.
+* L<sub>mask</sub> is defined as the average binary cross-entropy loss, only including k-th mask if the region is associated with the ground truth class k.
+</br>
+![mrcnn](images/mrcnn-loss.svg)
+</br>
+where y<sub>ij</sub> is the label of a cell (i, j) in the true mask for the region of size m x m; y<sub>ij</sub><sup>^k</sup> is the predicted value of the same cell in the mask learned for the ground-truth class k.
 
 ## MaskRCNN vs Lanenet
 * **MaskRCNN - **
+    * Mask R-CNN extends Faster R-CNN to pixel-level image segmentation.
+    * The key point is to decouple the classification and the pixel-level mask prediction tasks.
+    * Based on the framework of Faster R-CNN, it added a third branch for predicting an object mask in parallel with the existing branches for classification and localization.
+    * The mask branch is a small fully-connected network applied to each RoI, predicting a segmentation mask in a pixel-to-pixel manner.</br>
+![mrcnn](images/mask-rcnn.png)
+<pre>Fig. 1a. Mask R-CNN is Faster R-CNN model with image segmentation. </pre>
+	* Because pixel-level segmentation requires much more fine-grained alignment than bounding boxes, mask R-CNN improves the RoI pooling layer (named “RoIAlign layer”) so that RoI can be better and more precisely mapped to the regions of the original image.
+    * **RoIAlign -**
+    * The RoIAlign layer is designed to fix the location misalignment caused by quantization in the RoI pooling. RoIAlign removes the hash quantization, for example, by using x/16 instead of [x/16], so that the extracted features can be properly aligned with the input pixels. Bilinear interpolation is used for computing the floating-point location values in the input.
 ![mrcnn](images/mrcnn.png)
-<pre>									Fig 1</pre>
-Fig 1 - The model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.
+<pre>Fig. 1b. - The model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.</pre>
 ---
 * **Lanenet - **
 	* with curve fitting
@@ -396,8 +440,10 @@ Fig 1 - The model generates bounding boxes and segmentation masks for each insta
 Fig 2a - Given an input image, LaneNet outputs a lane instance map, by labeling each lane pixel with a lane id. Next, the lane pixels are transformed using the transformation matrix, outputted by H-Net which learns a perspective transformation conditioned on the input image. For each lane a 3rd order polynomial is fitted and the lanes are reprojected onto the image.
 
 ## Evaluation matrix of lanenet
-* The accuracy is calculated as the average correct number of points per image:</br>
-<pre>		![](images/acc.svg)</pre>
+* The accuracy is calculated as the average correct number of points per image:
+</br>
+![](images/acc.svg)
+</br>
 with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number of ground-truth points.
 * A point is correct when the difference between a ground-truth and predicted point is less than a certain threshold.</br>
 * Together with the accuracy, they also provide the false positive and false negative scores:</br>
@@ -433,7 +479,11 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 	* https://medium.com/@alittlepain833/simple-understanding-of-mask-rcnn-134b5b330e95
 	* https://www.analyticsvidhya.com/blog/2019/07/computer-vision-implementing-mask-r-cnn-image-segmentation/?utm_source=blog&utm_medium=introduction-image-segmentation-techniques-python
 * MSE and cross-entropy - 
-	* https://towardsdatascience.com/common-loss-functions-in-machine-learning-46af0ffc4d23 
+	* https://towardsdatascience.com/common-loss-functions-in-machine-learning-46af0ffc4d23
+* CNN layers and loss functions - 
+	* https://lilianweng.github.io/lil-log/2017/12/31/object-recognition-for-dummies-part-3.html#loss-function-2
+* A Brief History of CNNs in Image Segmentation: From R-CNN to Mask R-CNN - 
+	* https://blog.athelas.com/a-brief-history-of-cnns-in-image-segmentation-from-r-cnn-to-mask-r-cnn-34ea83205de4 
 
 **TODO**
 
@@ -445,3 +495,9 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 - [x] Visualization of Tusimple dataset
 - [ ] Testing on other LND dataset
 - [ ] Evaluation metrics for LND
+
+* MaskRCNN 3 loss functions
+* Activation functions
+* Number of layers
+* Applications of False Positive and False negative
+* Evaluation experimentsc

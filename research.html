@@ -144,33 +144,55 @@
 <!--span class="number">
 17
 </span-->
-</li>
+<ul>
+<li><ul>
+<li><ul>
 <li><span class="title">
-<a href="#maskrcnn-vs-lanenet" title="MaskRCNN vs Lanenet">MaskRCNN vs Lanenet</a>
+<a href="#lanenet--" title="Lanenet -">Lanenet -</a>
 </span>
 <!--span class="number">
 18
 </span-->
 </li>
 <li><span class="title">
-<a href="#evaluation-matrix-of-lanenet" title="Evaluation matrix of lanenet">Evaluation matrix of lanenet</a>
+<a href="#maskrcnn--" title="MaskRCNN -">MaskRCNN -</a>
 </span>
 <!--span class="number">
 19
 </span-->
 </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li><span class="title">
-<a href="#add-ons" title="Add-ons">Add-ons</a>
+<a href="#maskrcnn-vs-lanenet" title="MaskRCNN vs Lanenet">MaskRCNN vs Lanenet</a>
 </span>
 <!--span class="number">
 20
 </span-->
 </li>
 <li><span class="title">
-<a href="#references" title="References">References</a>
+<a href="#evaluation-matrix-of-lanenet" title="Evaluation matrix of lanenet">Evaluation matrix of lanenet</a>
 </span>
 <!--span class="number">
 21
+</span-->
+</li>
+<li><span class="title">
+<a href="#add-ons" title="Add-ons">Add-ons</a>
+</span>
+<!--span class="number">
+22
+</span-->
+</li>
+<li><span class="title">
+<a href="#references" title="References">References</a>
+</span>
+<!--span class="number">
+23
 </span-->
 </li>
 </ul>
@@ -1165,13 +1187,13 @@
 <li>Testing (100K images with held-out class labels)</li>
 </ul>
 </li>
-</ul><h2 id="loss-functions-of-lanenet"><a name="loss-functions-of-lanenet" href="#loss-functions-of-lanenet"></a>Loss functions of Lanenet</h2><ul>
+</ul><h2 id="loss-functions-of-lanenet"><a name="loss-functions-of-lanenet" href="#loss-functions-of-lanenet"></a>Loss functions of Lanenet</h2><h5 id="lanenet--"><a name="lanenet--" href="#lanenet--"></a>Lanenet -</h5><ul>
 <li>LaneNet is trained end-to-end for lane detection, by treating lane detection as an <strong>instance segmentation problem.</strong></li>
 <li>The <strong>instance segmentation task</strong> consists of two parts, a <strong>segmentation and a clustering part</strong></li>
 <li>To increase performance, both in terms of speed and accuracy, these two parts are jointly trained in a multi-task network</li>
 <li><strong>Binary segmentation</strong> - <ul>
 <li>The segmentation branch of LaneNet is trained to output a binary segmentation map, indicating which pixels belong to a lane and which not</li>
-<li>The segmentation network is trained with the <strong>standard cross-entropy loss function</strong> (Common for classification problem). Since the two classes (lane/background) are highly unbalanced, we apply <strong>bounded inverse class weighting</strong></li>
+<li>The segmentation network is trained with the <strong>standard cross-entropy loss function</strong> (Common for classification problem). Since the two classes (lane/background) are highly unbalanced, we apply <strong>bounded inverse class weighting</strong><br><br><br><img src="images/crossentropyloss.svg" alt=""><br><br></li>
 </ul>
 </li>
 <li><strong>Instance segmentation</strong> -<ul>
@@ -1180,12 +1202,71 @@
 <li>By using their <strong>clustering loss function</strong>, the instance embedding branch is trained to output an embedding for each lane pixel so that the distance between pixel embeddings belonging to the same lane is small, whereas the distance between pixel embeddings belonging to different lanes is maximized.</li>
 </ul>
 </li>
-<li><strong>H-Net</strong> -<ul>
-<li>In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, <strong>custom loss function</strong> is used</li>
+<li><strong>H-Net -</strong><ul>
+<li>In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, custom loss function <strong>Mean Square Error (MSE)</strong> is used<br><br><img src="images/custom-loss-hnet.svg" alt=""><br><br></li>
 </ul>
 </li>
+</ul><h5 id="maskrcnn--"><a name="maskrcnn--" href="#maskrcnn--"></a>MaskRCNN -</h5><ul>
+<li><p>The multi-task loss function of Mask R-CNN combines the loss of classification, localization and segmentation mask:<br>L = L<sub>cls</sub>+L<sub>box</sub>+L<sub>mask</sub>, where L<sub>cls</sub> and L<sub>box</sub> are same as in Faster R-CNN.</p>
+<ul>
+<li><p>Faster R-CNN is optimized for a multi-task loss function, similar to fast R-CNN.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Symbol</th>
+<th style="text-align:left">Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">p<sub>i</sub></td>
+<td style="text-align:left">Predicted probability of anchor i being an object.</td>
+</tr>
+<tr>
+<td style="text-align:left">p<sub>i</sub><sup>*</sup></td>
+<td style="text-align:left">Ground truth label (binary) of whether anchor i is an object.</td>
+</tr>
+<tr>
+<td style="text-align:left">t<sub>i</sub></td>
+<td style="text-align:left">Predicted four parameterized coordinates.</td>
+</tr>
+<tr>
+<td style="text-align:left">t<sub>i</sub><sup>*</sup></td>
+<td style="text-align:left">Ground truth coordinates.</td>
+</tr>
+<tr>
+<td style="text-align:left">N<sub>cls</sub></td>
+<td style="text-align:left">Normalization term, set to be mini-batch size (~256) in the paper.</td>
+</tr>
+<tr>
+<td style="text-align:left">N<sub>box</sub></td>
+<td style="text-align:left">Normalization term, set to the number of anchor locations (~2400) in the paper.</td>
+</tr>
+<tr>
+<td style="text-align:left">λ</td>
+<td style="text-align:left">A balancing parameter, set to be ~10 in the paper (so that both Lcls and Lbox terms are roughly equally weighted).</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>The multi-task loss function combines the losses of classification and bounding box regression:<br>L = L<sub>cls</sub> + L<sub>box</sub><br><br><img src="images/frcnn-loss.svg" alt=""><br><br><br>where L<sub>cls</sub> is the log loss function over two classes, as we can easily translate a multi-class classification into a binary classification by predicting a sample being a target object versus not.  L<sub>1</sub><sup>smooth</sup> is the smooth L1 loss<br><br><br><img src="images/frcnn-loss2.svg" alt=""><br><br></li>
+</ul>
+</li>
+</ul><ul>
+<li>The mask branch generates a mask of dimension m x m for each RoI and each class; K classes in total. Thus, the total output is of size K⋅m<sup>2</sup>. Because the model is trying to learn a mask for each class, there is no competition among classes for generating masks.</li>
+<li>L<sub>mask</sub> is defined as the average binary cross-entropy loss, only including k-th mask if the region is associated with the ground truth class k.<br><br><br><img src="images/mrcnn-loss.svg" alt="mrcnn"><br><br><br>where y<sub>ij</sub> is the label of a cell (i, j) in the true mask for the region of size m x m; y<sub>ij</sub><sup>^k</sup> is the predicted value of the same cell in the mask learned for the ground-truth class k.</li>
 </ul><h2 id="maskrcnn-vs-lanenet"><a name="maskrcnn-vs-lanenet" href="#maskrcnn-vs-lanenet"></a>MaskRCNN vs Lanenet</h2><ul>
-<li><strong>MaskRCNN - </strong><br><img src="images/mrcnn.png" alt="mrcnn"><br><pre>                                    Fig 1</pre><br>Fig 1 - The model generates bounding boxes and segmentation masks for each instance of an object in the image. It’s based on Feature Pyramid Network (FPN) and a ResNet101 backbone.</li>
+<li><strong>MaskRCNN - </strong><ul>
+<li>Mask R-CNN extends Faster R-CNN to pixel-level image segmentation.</li>
+<li>The key point is to decouple the classification and the pixel-level mask prediction tasks.</li>
+<li>Based on the framework of Faster R-CNN, it added a third branch for predicting an object mask in parallel with the existing branches for classification and localization.</li>
+<li>The mask branch is a small fully-connected network applied to each RoI, predicting a segmentation mask in a pixel-to-pixel manner.<br><br><img src="images/mask-rcnn.png" alt="mrcnn"><pre>Fig. 1a. Mask R-CNN is Faster R-CNN model with image segmentation. </pre></li>
+<li>Because pixel-level segmentation requires much more fine-grained alignment than bounding boxes, mask R-CNN improves the RoI pooling layer (named “RoIAlign layer”) so that RoI can be better and more precisely mapped to the regions of the original image.</li>
+<li><strong>RoIAlign -</strong></li>
+<li>The RoIAlign layer is designed to fix the location misalignment caused by quantization in the RoI pooling. RoIAlign removes the hash quantization, for example, by using x/16 instead of [x/16], so that the extracted features can be properly aligned with the input pixels. Bilinear interpolation is used for computing the floating-point location values in the input.<br><img src="images/mrcnn.png" alt="mrcnn"><pre>Fig. 1b. - The model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.</pre>
+</li>
+</ul>
+</li>
 </ul><hr class="section"><ul>
 <li><strong>Lanenet - </strong><ul>
 <li>with curve fitting<br><img src="images/lanenet.png" alt="lanenet"><pre>                                    Fig 2a</pre></li>
@@ -1195,7 +1276,7 @@
 </ul>
 </li>
 </ul><p>Fig 2a - Given an input image, LaneNet outputs a lane instance map, by labeling each lane pixel with a lane id. Next, the lane pixels are transformed using the transformation matrix, outputted by H-Net which learns a perspective transformation conditioned on the input image. For each lane a 3rd order polynomial is fitted and the lanes are reprojected onto the image.</p><h2 id="evaluation-matrix-of-lanenet"><a name="evaluation-matrix-of-lanenet" href="#evaluation-matrix-of-lanenet"></a>Evaluation matrix of lanenet</h2><ul>
-<li>The accuracy is calculated as the average correct number of points per image:<br><br><pre>        <img src="images/acc.svg" alt=""></pre><br>with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number of ground-truth points.</li>
+<li>The accuracy is calculated as the average correct number of points per image:<br><br><br><img src="images/acc.svg" alt=""><br><br><br>with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number of ground-truth points.</li>
 <li>A point is correct when the difference between a ground-truth and predicted point is less than a certain threshold.<br></li>
 <li>Together with the accuracy, they also provide the false positive and false negative scores:<br><br><pre><img src="images/fp.svg" alt="">    <img src="images/fn.svg" alt=""></pre><br>with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> the number of predicted lanes, M<sub>pred</sub> the number of missed ground-truth lanes and N<sub>gt</sub> the number of all ground-truth lanes.</li>
 </ul><h2 id="add-ons"><a name="add-ons" href="#add-ons"></a>Add-ons</h2><ul>
@@ -1236,7 +1317,15 @@
 </ul>
 </li>
 <li>MSE and cross-entropy - <ul>
-<li><a href="https://towardsdatascience.com/common-loss-functions-in-machine-learning-46af0ffc4d23">https://towardsdatascience.com/common-loss-functions-in-machine-learning-46af0ffc4d23</a> </li>
+<li><a href="https://towardsdatascience.com/common-loss-functions-in-machine-learning-46af0ffc4d23">https://towardsdatascience.com/common-loss-functions-in-machine-learning-46af0ffc4d23</a></li>
+</ul>
+</li>
+<li>CNN layers and loss functions - <ul>
+<li><a href="https://lilianweng.github.io/lil-log/2017/12/31/object-recognition-for-dummies-part-3.html#loss-function-2">https://lilianweng.github.io/lil-log/2017/12/31/object-recognition-for-dummies-part-3.html#loss-function-2</a></li>
+</ul>
+</li>
+<li>A Brief History of CNNs in Image Segmentation: From R-CNN to Mask R-CNN - <ul>
+<li><a href="https://blog.athelas.com/a-brief-history-of-cnns-in-image-segmentation-from-r-cnn-to-mask-r-cnn-34ea83205de4">https://blog.athelas.com/a-brief-history-of-cnns-in-image-segmentation-from-r-cnn-to-mask-r-cnn-34ea83205de4</a> </li>
 </ul>
 </li>
 </ul><p><strong>TODO</strong></p><ul>
@@ -1248,6 +1337,12 @@
 <li>[x] Visualization of Tusimple dataset</li>
 <li>[ ] Testing on other LND dataset</li>
 <li>[ ] Evaluation metrics for LND</li>
+</ul><ul>
+<li>MaskRCNN 3 loss functions</li>
+<li>Activation functions</li>
+<li>Number of layers</li>
+<li>Applications of False Positive and False negative</li>
+<li>Evaluation experimentsc</li>
 </ul>
 
 <footer style="position:fixed; font-size:.8em; text-align:right; bottom:0px; margin-left:-25px; height:20px; width:100%;">generated by <a href="http://pad.haroopress.com" target="_blank">haroopad</a></footer>
