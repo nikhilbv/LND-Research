@@ -450,6 +450,19 @@ with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number o
 <pre>![](images/fp.svg)	![](images/fn.svg)</pre>
 with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> the number of predicted lanes, M<sub>pred</sub> the number of missed ground-truth lanes and N<sub>gt</sub> the number of all ground-truth lanes.
 
+### Experiments
+* Full dataset
+| slno| model | tusimple | gaze data |
+|:--------:|:--------:|:--------:|:--------:|
+| 1 | Pre-trained</br> (vgg16 on imagenet) | acc? | acc? |
+| 2 | Trained on tusimple| acc? | acc? |
+
+* Subset
+| slno| model | tusimple | gaze data |
+|:--------:|:--------:|:--------:|:--------:|
+| 1 | Pre-trained</br> (vgg16 on imagenet) | acc? | acc? |
+| 2 | Trained on tusimple| acc? | acc? |
+
 ## Add-ons
 * Tusimple class info visualizer -
 https://github.com/nikhilbv/TuSimple-lane-classes
