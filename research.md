@@ -347,8 +347,9 @@ includes 2782 video clips
 
 ## VGG16 model details
 * Paper - https://arxiv.org/abs/1409.1556
-![vgg-layers](images/vggnet -layers-bd.png)
-![vgg-layers-details](images/vggnet -layers.png)
+![vgg-layers](images/vggnet-layers-bd.png)
+<br>
+![vgg-layers-details](images/vggnet-layers.png)
 * Training parameters -
 	- Batch size = 256
     - Momemtum = 0.9
@@ -378,6 +379,7 @@ includes 2782 video clips
     * By using their **clustering loss function**, the instance embedding branch is trained to output an embedding for each lane pixel so that the distance between pixel embeddings belonging to the same lane is small, whereas the distance between pixel embeddings belonging to different lanes is maximized.
 	* a variance term (L<sub>var</sub>), that applies a pull force on each embedding towards the mean embedding of a lane, and a distance term (L<sub>dist</sub>), that pushes the cluster centers away from each other. Both terms are hinged: the pull force is only active when an embedding is further than δ<sub>v</sub> from its cluster center, and the push force between centers is only active when they are closer than δ<sub>d</sub> to each-other. With C denoting the number of clusters (lanes), N<sub>c</sub> the number of elements in cluster c, x<sub>i</sub> a pixel embedding, μ<sub>c</sub> the mean embedding of cluster c, ||·|| the L2 distance, and [x]<sub>+</sub> = max(0, x) the hinge, the total loss L is equal to L<sub>var</sub> + L<sub>dist</sub> with: <br>
 ![clustering-loss](images/clustering-loss.svg)
+<br>
 * * **H-Net -**
     * In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, custom loss function **Mean Square Error (MSE)** is used</br>
 ![custom-loss-hnet](images/custom-loss-hnet.svg)
@@ -385,27 +387,24 @@ includes 2782 video clips
 
 ##### MaskRCNN -
 * The multi-task loss function of Mask R-CNN combines the loss of classification, localization and segmentation mask:</br>L = L<sub>cls</sub>+L<sub>box</sub>+L<sub>mask</sub>, where L<sub>cls</sub> and L<sub>box</sub> are same as in Faster R-CNN.
-    * Faster R-CNN is optimized for a multi-task loss function, similar to fast R-CNN.
+* Faster R-CNN is optimized for a multi-task loss function, similar to fast R-CNN.
 
-    | Symbol | Explanation |
-    |:--------|:--------|
-	|p<sub>i</sub>|Predicted probability of anchor i being an object.|
-    |p<sub>i</sub><sup>*</sup>|	Ground truth label (binary) of whether anchor i is an object.|
-    |t<sub>i</sub>	|Predicted four parameterized coordinates.|
-    |t<sub>i</sub><sup>*</sup>|	Ground truth coordinates.|
-    |N<sub>cls</sub>|	Normalization term, set to be mini-batch size (~256) in the paper.|
-    |N<sub>box</sub>|	Normalization term, set to the number of anchor locations (~2400) in the paper.|
-    |λ|	A balancing parameter, set to be ~10 in the paper (so that both Lcls and Lbox terms are roughly equally weighted).|
-    * The multi-task loss function combines the losses of classification and bounding box regression:</br>L = L<sub>cls</sub> + L<sub>box</sub></br>
+| Symbol | Explanation |
+|:--------|:--------|
+|p<sub>i</sub>|Predicted probability of anchor i being an object.|
+|p<sub>i</sub><sup>*</sup>|	Ground truth label (binary) of whether anchor i is an object.|
+|t<sub>i</sub>	|Predicted four parameterized coordinates.|
+|t<sub>i</sub><sup>*</sup>|	Ground truth coordinates.|
+|N<sub>cls</sub>|	Normalization term, set to be mini-batch size (~256) in the paper.|
+|N<sub>box</sub>|	Normalization term, set to the number of anchor locations (~2400) in the paper.|
+|λ|	A balancing parameter, set to be ~10 in the paper (so that both Lcls and Lbox terms are roughly equally weighted).|
+* The multi-task loss function combines the losses of classification and bounding box regression:</br>L = L<sub>cls</sub> + L<sub>box</sub></br>
 ![frcnn-loss](images/frcnn-loss.svg)
 </br>
     where L<sub>cls</sub> is the log loss function over two classes, as we can easily translate a multi-class classification into a binary classification by predicting a sample being a target object versus not.  L<sub>1</sub><sup>smooth</sup> is the smooth L1 loss
 </br>
 ![frcnn-loss2](images/frcnn-loss2.svg)
 </br>
-
-
-
 * The mask branch generates a mask of dimension m x m for each RoI and each class; K classes in total. Thus, the total output is of size K⋅m<sup>2</sup>. Because the model is trying to learn a mask for each class, there is no competition among classes for generating masks.
 * L<sub>mask</sub> is defined as the average binary cross-entropy loss, only including k-th mask if the region is associated with the ground truth class k.
 </br>
@@ -451,13 +450,13 @@ with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> th
 ### Experiments
 * Full dataset
 | slno| model | tusimple | gaze data |
-|:--------:|:--------:|:--------:|:--------:|
+| :---: | :---: | :---: | :---: |
 | 1 | Pre-trained</br> (vgg16 on imagenet) | acc? | acc? |
 | 2 | Trained on tusimple| acc? | acc? |
 
 * Subset
 | slno| model | tusimple | gaze data |
-|:--------:|:--------:|:--------:|:--------:|
+| :---: | :---: | :---: | :---: |
 | 1 | Pre-trained</br> (vgg16 on imagenet) | acc? | acc? |
 | 2 | Trained on tusimple| acc? | acc? |
 
