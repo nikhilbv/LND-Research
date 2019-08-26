@@ -1202,17 +1202,21 @@
 <li>To increase performance, both in terms of speed and accuracy, these two parts are jointly trained in a multi-task network</li>
 <li><strong>Binary segmentation</strong> - <ul>
 <li>The segmentation branch of LaneNet is trained to output a binary segmentation map, indicating which pixels belong to a lane and which not</li>
-<li>The segmentation network is trained with the <strong>standard cross-entropy loss function</strong> (Common for classification problem). Since the two classes (lane/background) are highly unbalanced, we apply <strong>bounded inverse class weighting</strong><br><br><br><img src="images/crossentropyloss.svg" alt=""><br><br></li>
+<li>The segmentation network is trained with the <strong>standard cross-entropy loss function</strong> (Common for classification problem). Since the two classes (lane/background) are highly unbalanced, we apply <strong>bounded inverse class weighting</strong><br><br><br><img src="images/crossentropyloss.svg" alt="crossentropyloss"><br><br></li>
 </ul>
 </li>
 <li><strong>Instance segmentation</strong> -<ul>
 <li>To disentangle the lane pixels identified by the segmentation branch, we train the second branch of LaneNet for lane instance embedding</li>
 <li>We use a one-shot method based on <strong>distance metric learning</strong> which can easily be integrated with standard feed-forward networks and which is specifically designed for real-time applications</li>
 <li>By using their <strong>clustering loss function</strong>, the instance embedding branch is trained to output an embedding for each lane pixel so that the distance between pixel embeddings belonging to the same lane is small, whereas the distance between pixel embeddings belonging to different lanes is maximized.</li>
+<li>a variance term (L<sub>var</sub>), that applies a pull force on each embedding towards the mean embedding of a lane, and a distance term (L<sub>dist</sub>), that pushes the cluster centers away from each other. Both terms are hinged: the pull force is only active when an embedding is further than δ<sub>v</sub> from its cluster center, and the push force between centers is only active when they are closer than δ<sub>d</sub> to each-other. With C denoting the number of clusters (lanes), N<sub>c</sub> the number of elements in cluster c, x<sub>i</sub> a pixel embedding, μ<sub>c</sub> the mean embedding of cluster c, ||·|| the L2 distance, and [x]<sub>+</sub> = max(0, x) the hinge, the total loss L is equal to L<sub>var</sub> + L<sub>dist</sub> with: <br><br><img src="images/clustering-loss.svg" alt="clustering-loss"></li>
 </ul>
 </li>
+<li><ul>
 <li><strong>H-Net -</strong><ul>
-<li>In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, custom loss function <strong>Mean Square Error (MSE)</strong> is used<br><br><img src="images/custom-loss-hnet.svg" alt=""><br><br></li>
+<li>In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, custom loss function <strong>Mean Square Error (MSE)</strong> is used<br><br><img src="images/custom-loss-hnet.svg" alt="custom-loss-hnet"><br><br></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul><h5 id="maskrcnn--"><a name="maskrcnn--" href="#maskrcnn--"></a>MaskRCNN -</h5><ul>
@@ -1258,18 +1262,18 @@
 </tbody>
 </table>
 </li>
-<li>The multi-task loss function combines the losses of classification and bounding box regression:<br>L = L<sub>cls</sub> + L<sub>box</sub><br><br><img src="images/frcnn-loss.svg" alt=""><br><br><br>where L<sub>cls</sub> is the log loss function over two classes, as we can easily translate a multi-class classification into a binary classification by predicting a sample being a target object versus not.  L<sub>1</sub><sup>smooth</sup> is the smooth L1 loss<br><br><br><img src="images/frcnn-loss2.svg" alt=""><br><br></li>
+<li>The multi-task loss function combines the losses of classification and bounding box regression:<br>L = L<sub>cls</sub> + L<sub>box</sub><br><br><img src="images/frcnn-loss.svg" alt="frcnn-loss"><br><br><br>where L<sub>cls</sub> is the log loss function over two classes, as we can easily translate a multi-class classification into a binary classification by predicting a sample being a target object versus not.  L<sub>1</sub><sup>smooth</sup> is the smooth L1 loss<br><br><br><img src="images/frcnn-loss2.svg" alt="frcnn-loss2"><br><br></li>
 </ul>
 </li>
 </ul><ul>
 <li>The mask branch generates a mask of dimension m x m for each RoI and each class; K classes in total. Thus, the total output is of size K⋅m<sup>2</sup>. Because the model is trying to learn a mask for each class, there is no competition among classes for generating masks.</li>
-<li>L<sub>mask</sub> is defined as the average binary cross-entropy loss, only including k-th mask if the region is associated with the ground truth class k.<br><br><br><img src="images/mrcnn-loss.svg" alt="mrcnn"><br><br><br>where y<sub>ij</sub> is the label of a cell (i, j) in the true mask for the region of size m x m; y<sub>ij</sub><sup>^k</sup> is the predicted value of the same cell in the mask learned for the ground-truth class k.</li>
+<li>L<sub>mask</sub> is defined as the average binary cross-entropy loss, only including k-th mask if the region is associated with the ground truth class k.<br><br><br><img src="images/mrcnn-loss.svg" alt="mrcnn-loss"><br><br><br>where y<sub>ij</sub> is the label of a cell (i, j) in the true mask for the region of size m x m; y<sub>ij</sub><sup>^k</sup> is the predicted value of the same cell in the mask learned for the ground-truth class k.</li>
 </ul><h2 id="maskrcnn-vs-lanenet"><a name="maskrcnn-vs-lanenet" href="#maskrcnn-vs-lanenet"></a>MaskRCNN vs Lanenet</h2><ul>
 <li><strong>MaskRCNN - </strong><ul>
 <li>Mask R-CNN extends Faster R-CNN to pixel-level image segmentation.</li>
 <li>The key point is to decouple the classification and the pixel-level mask prediction tasks.</li>
 <li>Based on the framework of Faster R-CNN, it added a third branch for predicting an object mask in parallel with the existing branches for classification and localization.</li>
-<li>The mask branch is a small fully-connected network applied to each RoI, predicting a segmentation mask in a pixel-to-pixel manner.<br><br><img src="images/mask-rcnn.png" alt="mrcnn"><pre>Fig. 1a. Mask R-CNN is Faster R-CNN model with image segmentation. </pre></li>
+<li>The mask branch is a small fully-connected network applied to each RoI, predicting a segmentation mask in a pixel-to-pixel manner.<br><br><img src="images/mask-rcnn.png" alt="mask-rcnn"><pre>Fig. 1a. Mask R-CNN is Faster R-CNN model with image segmentation. </pre></li>
 <li>Because pixel-level segmentation requires much more fine-grained alignment than bounding boxes, mask R-CNN improves the RoI pooling layer (named “RoIAlign layer”) so that RoI can be better and more precisely mapped to the regions of the original image.</li>
 <li><strong>RoIAlign -</strong></li>
 <li>The RoIAlign layer is designed to fix the location misalignment caused by quantization in the RoI pooling. RoIAlign removes the hash quantization, for example, by using x/16 instead of [x/16], so that the extracted features can be properly aligned with the input pixels. Bilinear interpolation is used for computing the floating-point location values in the input.<br><img src="images/mrcnn.png" alt="mrcnn"><pre>Fig. 1b. - The model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.</pre>
@@ -1285,9 +1289,9 @@
 </ul>
 </li>
 </ul><p>Fig 2a - Given an input image, LaneNet outputs a lane instance map, by labeling each lane pixel with a lane id. Next, the lane pixels are transformed using the transformation matrix, outputted by H-Net which learns a perspective transformation conditioned on the input image. For each lane a 3rd order polynomial is fitted and the lanes are reprojected onto the image.</p><h2 id="evaluation-matrix-of-lanenet"><a name="evaluation-matrix-of-lanenet" href="#evaluation-matrix-of-lanenet"></a>Evaluation matrix of lanenet</h2><ul>
-<li>The accuracy is calculated as the average correct number of points per image:<br><br><br><img src="images/acc.svg" alt=""><br><br><br>with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number of ground-truth points.</li>
+<li>The accuracy is calculated as the average correct number of points per image:<br><br><br><img src="images/acc.svg" alt="acc"><br><br><br>with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number of ground-truth points.</li>
 <li>A point is correct when the difference between a ground-truth and predicted point is less than a certain threshold.<br></li>
-<li>Together with the accuracy, they also provide the false positive and false negative scores:<br><br><pre><img src="images/fp.svg" alt="">    <img src="images/fn.svg" alt=""></pre><br>with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> the number of predicted lanes, M<sub>pred</sub> the number of missed ground-truth lanes and N<sub>gt</sub> the number of all ground-truth lanes.</li>
+<li>Together with the accuracy, they also provide the false positive and false negative scores:<br><br><pre><img src="images/fp.svg" alt="fp">    <img src="images/fn.svg" alt="fn"></pre><br>with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> the number of predicted lanes, M<sub>pred</sub> the number of missed ground-truth lanes and N<sub>gt</sub> the number of all ground-truth lanes.</li>
 </ul><h3 id="experiments"><a name="experiments" href="#experiments"></a>Experiments</h3><ul>
 <li><p>Full dataset</p>
 <table>
@@ -1402,9 +1406,9 @@
 </ul><p><strong>TODO_Sub</strong></p><ul>
 <li>[x] MaskRCNN 3 loss functions</li>
 <li>[x] Evaluation experiments</li>
-<li>[] Activation functions</li>
-<li>[] Number of layers</li>
-<li>[] Applications of False Positive and False negative</li>
+<li>[ ] Activation functions</li>
+<li>[ ] Number of layers</li>
+<li>[ ] Applications of False Positive and False negative</li>
 </ul>
 
 <footer style="position:fixed; font-size:.8em; text-align:right; bottom:0px; margin-left:-25px; height:20px; width:100%;">generated by <a href="http://pad.haroopress.com" target="_blank">haroopad</a></footer>
