@@ -509,8 +509,9 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 - [ ] Testing on other LND dataset
 - [ ] Evaluation metrics for LND
 
-* MaskRCNN 3 loss functions
-* Activation functions
-* Number of layers
-* Applications of False Positive and False negative
-* Evaluation experimentsc
+**TODO_Sub**
+- [x] MaskRCNN 3 loss functions
+- [x] Evaluation experiments
+- [] Activation functions
+- [] Number of layers
+- [] Applications of False Positive and False negative
