@@ -3,7 +3,7 @@ Title: LND Research
 Decription: Road profile detection
 Author: Nikhil B V
 Date: 11th Jun 2019
-Updated: 07th Aug 2019
+Updated: 29th Aug 2019
 Tags: raod, lanes
 ---
 
@@ -350,6 +350,7 @@ includes 2782 video clips
 ![vgg-layers](images/vggnet-layers-bd.png)
 <br>
 ![vgg-layers-details](images/vggnet-layers.png)
+<br>
 * Training parameters -
 	- Batch size = 256
     - Momemtum = 0.9
@@ -367,23 +368,26 @@ includes 2782 video clips
 * LaneNet is trained end-to-end for lane detection, by treating lane detection as an **instance segmentation problem.**
 * The **instance segmentation task** consists of two parts, a **segmentation and a clustering part**
 * To increase performance, both in terms of speed and accuracy, these two parts are jointly trained in a multi-task network
+<br>
 * **Binary segmentation** - 
     * The segmentation branch of LaneNet is trained to output a binary segmentation map, indicating which pixels belong to a lane and which not
     * The segmentation network is trained with the **standard cross-entropy loss function** (Common for classification problem). Since the two classes (lane/background) are highly unbalanced, we apply **bounded inverse class weighting**
-</br>
+<br>
 ![crossentropyloss](images/crossentropyloss.svg)
-</br>
+<br>
 * **Instance segmentation** -
     * To disentangle the lane pixels identified by the segmentation branch, we train the second branch of LaneNet for lane instance embedding
     * We use a one-shot method based on **distance metric learning** which can easily be integrated with standard feed-forward networks and which is specifically designed for real-time applications
     * By using their **clustering loss function**, the instance embedding branch is trained to output an embedding for each lane pixel so that the distance between pixel embeddings belonging to the same lane is small, whereas the distance between pixel embeddings belonging to different lanes is maximized.
-	* a variance term (L<sub>var</sub>), that applies a pull force on each embedding towards the mean embedding of a lane, and a distance term (L<sub>dist</sub>), that pushes the cluster centers away from each other. Both terms are hinged: the pull force is only active when an embedding is further than δ<sub>v</sub> from its cluster center, and the push force between centers is only active when they are closer than δ<sub>d</sub> to each-other. With C denoting the number of clusters (lanes), N<sub>c</sub> the number of elements in cluster c, x<sub>i</sub> a pixel embedding, μ<sub>c</sub> the mean embedding of cluster c, ||·|| the L2 distance, and [x]<sub>+</sub> = max(0, x) the hinge, the total loss L is equal to L<sub>var</sub> + L<sub>dist</sub> with: <br>
+	* a variance term (L<sub>var</sub>), that applies a pull force on each embedding towards the mean embedding of a lane, and a distance term (L<sub>dist</sub>), that pushes the cluster centers away from each other. Both terms are hinged: the pull force is only active when an embedding is further than δ<sub>v</sub> from its cluster center, and the push force between centers is only active when they are closer than δ<sub>d</sub> to each-other. With C denoting the number of clusters (lanes), N<sub>c</sub> the number of elements in cluster c, x<sub>i</sub> a pixel embedding, μ<sub>c</sub> the mean embedding of cluster c, ||·|| the L2 distance, and [x]<sub>+</sub> = max(0, x) the hinge, the total loss L is equal to L<sub>var</sub> + L<sub>dist</sub> with: 
+<br>
 ![clustering-loss](images/clustering-loss.svg)
 <br>
-* * **H-Net -**
-    * In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, custom loss function **Mean Square Error (MSE)** is used</br>
+* **H-Net -**
+    * In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, custom loss function **Mean Square Error (MSE)** is used
+<br>
 ![custom-loss-hnet](images/custom-loss-hnet.svg)
-</br>
+<br>
 
 ##### MaskRCNN -
 * The multi-task loss function of Mask R-CNN combines the loss of classification, localization and segmentation mask:</br>L = L<sub>cls</sub>+L<sub>box</sub>+L<sub>mask</sub>, where L<sub>cls</sub> and L<sub>box</sub> are same as in Faster R-CNN.
@@ -448,17 +452,7 @@ with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number o
 with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> the number of predicted lanes, M<sub>pred</sub> the number of missed ground-truth lanes and N<sub>gt</sub> the number of all ground-truth lanes.
 
 ### Experiments
-* Full dataset
-| slno| model | tusimple | gaze data |
-| :---: | :---: | :---: | :---: |
-| 1 | Pre-trained</br> (vgg16 on imagenet) | acc? | acc? |
-| 2 | Trained on tusimple| acc? | acc? |
-
-* Subset
-| slno| model | tusimple | gaze data |
-| :---: | :---: | :---: | :---: |
-| 1 | Pre-trained</br> (vgg16 on imagenet) | acc? | acc? |
-| 2 | Trained on tusimple| acc? | acc? |
+Refer `lanenet.xlsx` the excel sheet in /aimldl-rpt
 
 ## Add-ons
 * Tusimple class info visualizer -
