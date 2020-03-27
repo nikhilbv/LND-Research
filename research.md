@@ -3,7 +3,7 @@ Title: LND Research
 Decription: Road profile detection
 Author: Nikhil B V
 Date: 11th Jun 2019
-Updated: 07th Aug 2019
+Updated: 03rd Aug, 2019
 Tags: raod, lanes
 ---
 
@@ -451,17 +451,28 @@ with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number o
 with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> the number of predicted lanes, M<sub>pred</sub> the number of missed ground-truth lanes and N<sub>gt</sub> the number of all ground-truth lanes.
 
 ### Experiments
-* Full dataset
-| slno| model | tusimple | gaze data |
-|:--------:|:--------:|:--------:|:--------:|
-| 1 | Pre-trained</br> (vgg16 on imagenet) | acc? | acc? |
-| 2 | Trained on tusimple| acc? | acc? |
+* Refer the ods sheet
 
-* Subset
-| slno| model | tusimple | gaze data |
-|:--------:|:--------:|:--------:|:--------:|
-| 1 | Pre-trained</br> (vgg16 on imagenet) | acc? | acc? |
-| 2 | Trained on tusimple| acc? | acc? |
+## Lanenet references
+* tusimple DataSet：
+  Download：https://github.com/TuSimple/tusimple-benchmark/issues/3
+  Dataset interpretation：https://www.cnblogs.com/oftenlin/p/10670534.html
+* Autonomous driving data set summary：https://zhuanlan.zhihu.com/p/56451461
+* LaneNet + H-Net Interpretation：https://www.jianshu.com/p/c6d38d648509
+  https://ieeexplore.ieee.org/document/7734016
+* Lane Line Inspection Survey：https://blog.csdn.net/soulmeetliang/article/details/89398412
+  http://www.zhuanzhi.ai/topic/2001319504370995/awesome
+* Collected Papers：http://homes.esat.kuleuven.be/~konijn/publications/pub.html#tag2017
+  https://www.jianshu.com/p/40324b53a528
+* SCNN based on TensorFlow achieve：https://www.ctolib.com/cardwing-Codes-for-Lane-Detection.html
+* CULane DataSet:https://xingangpan.github.io/projects/CULane.html
+  http://www.cvlibs.net/datasets/kitti/eval_road.php
+* Mask RCNN Detailed thesis: https://blog.csdn.net/wangdongwei0/article/details/83110305
+  实例分割模型Mask R-CNN详解：从R-CNN，Fast R-CNN，Faster R-CNN再到Mask R-CNN   https://blog.csdn.net/jiongnima/article/details/79094159
+* Early warning based on lane line results：Areviewofrecentadvancesinlanedetectionanddeparturewarningsystem
+  https://ieeexplore.ieee.org/abstract/document/1336503
+* Track: https://blog.csdn.net/weixin_40245131/article/details/79754531
+
 
 ## Add-ons
 * Tusimple class info visualizer -
@@ -470,6 +481,8 @@ https://github.com/nikhilbv/TuSimple-lane-classes
 https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-and-classi%EF%AC%81cation-by-utilizing-cnn-as-a-regression-network-2.pdf
 * MIoU (mean intersection over union) metric
 * Apolloscape Evaluation - conventional Intersection-over-Union scores, also known as the **Jaccard Index**
+* Dense optical flow - https://github.com/pathak22/pyflow
+* Convert coordinates in a picture to the real world based on multiple reference points in the picture - https://github.com/1024jp/LensCalibrator
 
 ## References
 * http://apollo.auto/developer.html
@@ -506,11 +519,5 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 - [x] Dataset for LND
 - [x] Implementation of LND DNN
 - [x] Visualization of Tusimple dataset
-- [ ] Testing on other LND dataset
-- [ ] Evaluation metrics for LND
-
-* MaskRCNN 3 loss functions
-* Activation functions
-* Number of layers
-* Applications of False Positive and False negative
-* Evaluation experimentsc
+- [x] Testing on other LND dataset
+- [x] Evaluation metrics for LND
