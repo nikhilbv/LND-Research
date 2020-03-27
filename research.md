@@ -3,7 +3,6 @@ Title: LND Research
 Decription: Road profile detection
 Author: Nikhil B V
 Date: 11th Jun 2019
-Updated: 03rd Aug, 2019
 Tags: raod, lanes
 ---
 
@@ -181,13 +180,9 @@ Table of contents
 *  A frequently used solution to this problem is to project the image into a ”bird’s-eye view” representation, in which lanes are parallel to each other and as such, curved lanes can be fitted with a 2nd to 3rd order polynomial.
 *  However, in these cases the transformation matrix H is calculated once, and kept fixed for all images. Typically, this leads to errors under ground-plane changes where the vanishing-point, which is projected onto infinity, shifts up or downwards.
 *  To resolve this issue we train a neural network, H-Net, with a custom loss function: the network is optimized end-toend to predict the parameters of a perspective transformation H, in which the transformed lane points can be optimally fitted with a 2nd or 3rd order polynomial. The prediction is conditioned on the input image, allowing the network to adapt the projection parameters under ground-plane changes, so that the lane fitting will still be correct. 
-*  In our case, **H has 6 degrees of freedom**:
-    ```
-    H =  a b c
-        0 d e
-        0 f 1 ]
-    ```
-The zeros are placed to enforce the constraint that horizontal lines remain horizontal under the transformation.
+*  In our case, **H has 6 degrees of freedom**:<br>
+![6dof-matrix](images/6dof-matrix.svg)
+<br>The zeros are placed to enforce the constraint that horizontal lines remain horizontal under the transformation.
 
 ## Public Datasets for Lane Detection
 **Purpose is to answer the following questions**
@@ -351,8 +346,10 @@ includes 2782 video clips
 
 ## VGG16 model details
 * Paper - https://arxiv.org/abs/1409.1556
-![vgg-layers](images/vggnet -layers-bd.png)
-![vgg-layers-details](images/vggnet -layers.png)
+![vgg-layers](images/vggnet-layers-bd.png)
+<br>
+![vgg-layers-details](images/vggnet-layers.png)
+<br>
 * Training parameters -
 	- Batch size = 256
     - Momemtum = 0.9
@@ -370,48 +367,51 @@ includes 2782 video clips
 * LaneNet is trained end-to-end for lane detection, by treating lane detection as an **instance segmentation problem.**
 * The **instance segmentation task** consists of two parts, a **segmentation and a clustering part**
 * To increase performance, both in terms of speed and accuracy, these two parts are jointly trained in a multi-task network
+<br>
 * **Binary segmentation** - 
     * The segmentation branch of LaneNet is trained to output a binary segmentation map, indicating which pixels belong to a lane and which not
     * The segmentation network is trained with the **standard cross-entropy loss function** (Common for classification problem). Since the two classes (lane/background) are highly unbalanced, we apply **bounded inverse class weighting**
-</br>
-![](images/crossentropyloss.svg)
-</br>
+<br>
+![crossentropyloss](images/crossentropyloss.svg)
+<br>
 * **Instance segmentation** -
     * To disentangle the lane pixels identified by the segmentation branch, we train the second branch of LaneNet for lane instance embedding
     * We use a one-shot method based on **distance metric learning** which can easily be integrated with standard feed-forward networks and which is specifically designed for real-time applications
     * By using their **clustering loss function**, the instance embedding branch is trained to output an embedding for each lane pixel so that the distance between pixel embeddings belonging to the same lane is small, whereas the distance between pixel embeddings belonging to different lanes is maximized.
+	* a variance term (L<sub>var</sub>), that applies a pull force on each embedding towards the mean embedding of a lane, and a distance term (L<sub>dist</sub>), that pushes the cluster centers away from each other. Both terms are hinged: the pull force is only active when an embedding is further than δ<sub>v</sub> from its cluster center, and the push force between centers is only active when they are closer than δ<sub>d</sub> to each-other. With C denoting the number of clusters (lanes), N<sub>c</sub> the number of elements in cluster c, x<sub>i</sub> a pixel embedding, μ<sub>c</sub> the mean embedding of cluster c, ||·|| the L2 distance, and [x]<sub>+</sub> = max(0, x) the hinge, the total loss L is equal to L<sub>var</sub> + L<sub>dist</sub> with: 
+<br>
+![clustering-loss](images/clustering-loss.svg)
+<br>
 * **H-Net -**
-    * In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, custom loss function **Mean Square Error (MSE)** is used</br>
-![](images/custom-loss-hnet.svg)
-</br>
+    * In order to train H-Net for outputting the transformation matrix that is optimal for fitting a polynomial through lane pixels, custom loss function **Mean Square Error (MSE)** is used
+<br>
+![custom-loss-hnet](images/custom-loss-hnet.svg)
+<br>
 
 ##### MaskRCNN -
 * The multi-task loss function of Mask R-CNN combines the loss of classification, localization and segmentation mask:</br>L = L<sub>cls</sub>+L<sub>box</sub>+L<sub>mask</sub>, where L<sub>cls</sub> and L<sub>box</sub> are same as in Faster R-CNN.
-    * Faster R-CNN is optimized for a multi-task loss function, similar to fast R-CNN.
+* Faster R-CNN is optimized for a multi-task loss function, similar to fast R-CNN.
 
-    | Symbol | Explanation |
-    |:--------|:--------|
-	|p<sub>i</sub>|Predicted probability of anchor i being an object.|
-    |p<sub>i</sub><sup>*</sup>|	Ground truth label (binary) of whether anchor i is an object.|
-    |t<sub>i</sub>	|Predicted four parameterized coordinates.|
-    |t<sub>i</sub><sup>*</sup>|	Ground truth coordinates.|
-    |N<sub>cls</sub>|	Normalization term, set to be mini-batch size (~256) in the paper.|
-    |N<sub>box</sub>|	Normalization term, set to the number of anchor locations (~2400) in the paper.|
-    |λ|	A balancing parameter, set to be ~10 in the paper (so that both Lcls and Lbox terms are roughly equally weighted).|
-    * The multi-task loss function combines the losses of classification and bounding box regression:</br>L = L<sub>cls</sub> + L<sub>box</sub></br>
-![](images/frcnn-loss.svg)
+| Symbol | Explanation |
+|:--------|:--------|
+|p<sub>i</sub>|Predicted probability of anchor i being an object.|
+|p<sub>i</sub><sup>*</sup>|	Ground truth label (binary) of whether anchor i is an object.|
+|t<sub>i</sub>	|Predicted four parameterized coordinates.|
+|t<sub>i</sub><sup>*</sup>|	Ground truth coordinates.|
+|N<sub>cls</sub>|	Normalization term, set to be mini-batch size (~256) in the paper.|
+|N<sub>box</sub>|	Normalization term, set to the number of anchor locations (~2400) in the paper.|
+|λ|	A balancing parameter, set to be ~10 in the paper (so that both Lcls and Lbox terms are roughly equally weighted).|
+* The multi-task loss function combines the losses of classification and bounding box regression:</br>L = L<sub>cls</sub> + L<sub>box</sub></br>
+![frcnn-loss](images/frcnn-loss.svg)
 </br>
     where L<sub>cls</sub> is the log loss function over two classes, as we can easily translate a multi-class classification into a binary classification by predicting a sample being a target object versus not.  L<sub>1</sub><sup>smooth</sup> is the smooth L1 loss
 </br>
-![](images/frcnn-loss2.svg)
+![frcnn-loss2](images/frcnn-loss2.svg)
 </br>
-
-
-
 * The mask branch generates a mask of dimension m x m for each RoI and each class; K classes in total. Thus, the total output is of size K⋅m<sup>2</sup>. Because the model is trying to learn a mask for each class, there is no competition among classes for generating masks.
 * L<sub>mask</sub> is defined as the average binary cross-entropy loss, only including k-th mask if the region is associated with the ground truth class k.
 </br>
-![mrcnn](images/mrcnn-loss.svg)
+![mrcnn-loss](images/mrcnn-loss.svg)
 </br>
 where y<sub>ij</sub> is the label of a cell (i, j) in the true mask for the region of size m x m; y<sub>ij</sub><sup>^k</sup> is the predicted value of the same cell in the mask learned for the ground-truth class k.
 
@@ -421,7 +421,7 @@ where y<sub>ij</sub> is the label of a cell (i, j) in the true mask for the regi
     * The key point is to decouple the classification and the pixel-level mask prediction tasks.
     * Based on the framework of Faster R-CNN, it added a third branch for predicting an object mask in parallel with the existing branches for classification and localization.
     * The mask branch is a small fully-connected network applied to each RoI, predicting a segmentation mask in a pixel-to-pixel manner.</br>
-![mrcnn](images/mask-rcnn.png)
+![mask-rcnn](images/mask-rcnn.png)
 <pre>Fig. 1a. Mask R-CNN is Faster R-CNN model with image segmentation. </pre>
 	* Because pixel-level segmentation requires much more fine-grained alignment than bounding boxes, mask R-CNN improves the RoI pooling layer (named “RoIAlign layer”) so that RoI can be better and more precisely mapped to the regions of the original image.
     * **RoIAlign -**
@@ -442,12 +442,12 @@ Fig 2a - Given an input image, LaneNet outputs a lane instance map, by labeling 
 ## Evaluation matrix of lanenet
 * The accuracy is calculated as the average correct number of points per image:
 </br>
-![](images/acc.svg)
+![acc](images/acc.svg)
 </br>
 with C<sub>im</sub> the number of correct points and S<sub>im</sub> the number of ground-truth points.
 * A point is correct when the difference between a ground-truth and predicted point is less than a certain threshold.</br>
 * Together with the accuracy, they also provide the false positive and false negative scores:</br>
-<pre>![](images/fp.svg)	![](images/fn.svg)</pre>
+<pre>![fp](images/fp.svg)	![fn](images/fn.svg)</pre>
 with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> the number of predicted lanes, M<sub>pred</sub> the number of missed ground-truth lanes and N<sub>gt</sub> the number of all ground-truth lanes.
 
 ### Experiments
@@ -473,6 +473,8 @@ with F<sub>pred</sub> the number of wrongly predicted lanes, N<sub>pred</sub> th
   https://ieeexplore.ieee.org/abstract/document/1336503
 * Track: https://blog.csdn.net/weixin_40245131/article/details/79754531
 
+=======
+Refer `lanenet.xlsx` the excel sheet in /aimldl-rpt
 
 ## Add-ons
 * Tusimple class info visualizer -
@@ -521,3 +523,14 @@ https://www.visteon.com/wp-content/uploads/2019/02/reliable-multilane-detection-
 - [x] Visualization of Tusimple dataset
 - [x] Testing on other LND dataset
 - [x] Evaluation metrics for LND
+=======
+- [ ] Testing on other LND dataset
+- [ ] Evaluation metrics for LND
+
+**TODO_Sub**
+
+- [x] MaskRCNN 3 loss functions
+- [x] Evaluation experiments
+- [ ] Activation functions
+- [ ] Number of layers
+- [ ] Applications of False Positive and False negative
